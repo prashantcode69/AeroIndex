@@ -1,1 +1,12 @@
-node_modules/ 
+node_modules/
+dist/
+__pycache__/
+Backend/data/alerts.json
+Backend/data/pipeline_status.json
+Backend/.env
+
+# Per-window scrape scratch files - regenerable intermediate artifacts,
+# not meaningful source data (the real served data is data/routes/*/).
+Backend/data/raw/*_fares_raw_*.json
+Backend/data/raw/*_fares_cleaned.json
+Backend/data/raw/google_flights_results_*.txt

@@ -1,43 +1,41 @@
 import json
+import sys
 from pathlib import Path
 from datetime import datetime, timezone
 
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-RAW_FILE = BASE_DIR / "data/raw/google_fares_cleaned.json"
-ROUTE_FILE = BASE_DIR / "data/raw/current_route.txt"
 
 # Existing app compatibility ke liye
 OUTPUT_FILE = BASE_DIR / "data/cleaned/flights_cleaned.json"
 
 
-def get_current_route():
+def get_args():
     """
-    data/raw/current_route.txt se route read karta hai.
-
-    File format:
-    DEL,GOI
+    Example:
+    python cleaner.py DEL GOI
     """
 
-    if not ROUTE_FILE.exists():
-        print("⚠️ Route file nahi mili. Default route DEL_BOM use hoga.")
-        return "DEL", "BOM"
-
-    route_text = ROUTE_FILE.read_text(
-        encoding="utf-8"
-    ).strip()
-
-    if "," not in route_text:
-        print("⚠️ Route format galat hai. Default route DEL_BOM use hoga.")
-        return "DEL", "BOM"
-
-    origin, destination = route_text.split(",", 1)
-
-    origin = origin.strip().upper()
-    destination = destination.strip().upper()
+    if len(sys.argv) >= 3:
+        origin = sys.argv[1].upper()
+        destination = sys.argv[2].upper()
+    else:
+        origin = "DEL"
+        destination = "BOM"
 
     return origin, destination
+
+
+def get_raw_file(origin, destination):
+    return (
+        BASE_DIR
+        / "data"
+        / "raw"
+        / f"{origin}_{destination}_fares_cleaned.json"
+    )
 
 
 def get_route_output_file(origin, destination):
@@ -61,13 +59,13 @@ def get_route_output_file(origin, destination):
     return route_folder / "flights_cleaned.json"
 
 
-def load_fares():
-    if not RAW_FILE.exists():
+def load_fares(raw_file):
+    if not raw_file.exists():
         raise FileNotFoundError(
-            f"File not found: {RAW_FILE}"
+            f"File not found: {raw_file}"
         )
 
-    with RAW_FILE.open(
+    with raw_file.open(
         "r",
         encoding="utf-8"
     ) as f:
@@ -179,7 +177,7 @@ def save_fares(
 
 
 def main():
-    origin, destination = get_current_route()
+    origin, destination = get_args()
 
     print("\n" + "=" * 60)
     print("ROUTE-WISE FARE CLEANING")
@@ -187,7 +185,8 @@ def main():
     print(f"Route: {origin} → {destination}")
     print("=" * 60)
 
-    raw_records = load_fares()
+    raw_file = get_raw_file(origin, destination)
+    raw_records = load_fares(raw_file)
     cleaned_records = clean_fares(raw_records)
 
     save_fares(

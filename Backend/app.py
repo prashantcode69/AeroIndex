@@ -2,12 +2,16 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 from pathlib import Path
 from collections import defaultdict
+from datetime import datetime, timezone
 from urllib.parse import quote
 import json
+import re
 import statistics
 import subprocess
 import sys
 import threading
+import time
+import uuid
 
 
 app = Flask(__name__)
@@ -33,6 +37,17 @@ HISTORY_FILE = (
     / "history"
     / "airfare_history.json"
 )
+
+PIPELINE_STATUS_FILE = (
+    BASE_DIR
+    / "data"
+    / "pipeline_status.json"
+)
+
+# Kitni der tak collected data ko "fresh" mana jaaye, taaki live
+# demo ke waqt scraping par depend na karna pade agar route
+# recently already refresh ho chuka ho.
+CACHE_TTL_HOURS = 24
 
 
 # --------------------------------------------------
@@ -151,6 +166,129 @@ CITY_ALIASES = {
 
     "srinagar": "SXR",
     "sxr": "SXR",
+
+    "bhubaneswar": "BBI",
+    "bbi": "BBI",
+
+    "indore": "IDR",
+    "idr": "IDR",
+
+    "nagpur": "NAG",
+    "nag": "NAG",
+
+    "varanasi": "VNS",
+    "banaras": "VNS",
+    "vns": "VNS",
+
+    "amritsar": "ATQ",
+    "atq": "ATQ",
+
+    "raipur": "RPR",
+    "rpr": "RPR",
+
+    "ranchi": "IXR",
+    "ixr": "IXR",
+
+    "coimbatore": "CJB",
+    "cjb": "CJB",
+
+    "madurai": "IXM",
+    "ixm": "IXM",
+
+    "visakhapatnam": "VTZ",
+    "vizag": "VTZ",
+    "vtz": "VTZ",
+
+    "trivandrum": "TRV",
+    "thiruvananthapuram": "TRV",
+    "trv": "TRV",
+
+    "mangalore": "IXE",
+    "ixe": "IXE",
+
+    "nashik": "ISK",
+    "isk": "ISK",
+
+    "surat": "STV",
+    "stv": "STV",
+
+    "vadodara": "BDQ",
+    "baroda": "BDQ",
+    "bdq": "BDQ",
+
+    "bhopal": "BHO",
+    "bho": "BHO",
+
+    "dehradun": "DED",
+    "ded": "DED",
+
+    "port blair": "IXZ",
+    "ixz": "IXZ",
+
+    "agartala": "IXA",
+    "ixa": "IXA",
+
+    "imphal": "IMF",
+    "imf": "IMF",
+
+    "dibrugarh": "DIB",
+    "dib": "DIB",
+
+    "jodhpur": "JDH",
+    "jdh": "JDH",
+
+    "udaipur": "UDR",
+    "udr": "UDR",
+
+    "bagdogra": "IXB",
+    "ixb": "IXB",
+
+    "silchar": "IXS",
+    "ixs": "IXS",
+
+    "jammu": "IXJ",
+    "ixj": "IXJ",
+
+    "leh": "IXL",
+    "ixl": "IXL",
+
+    "rajkot": "RAJ",
+    "raj": "RAJ",
+
+    "aurangabad": "IXU",
+    "ixu": "IXU",
+
+    "tirupati": "TIR",
+    "tir": "TIR",
+
+    "vijayawada": "VGA",
+    "vga": "VGA",
+
+    "bhavnagar": "BHU",
+    "bhu": "BHU",
+
+    "jabalpur": "JLR",
+    "jlr": "JLR",
+
+    "gaya": "GAY",
+    "gay": "GAY",
+
+    "durgapur": "RDP",
+    "rdp": "RDP",
+
+    "belgaum": "IXG",
+    "ixg": "IXG",
+
+    "hubli": "HBX",
+    "hbx": "HBX",
+
+    "mysore": "MYQ",
+    "mysuru": "MYQ",
+    "myq": "MYQ",
+
+    "pondicherry": "PNY",
+    "puducherry": "PNY",
+    "pny": "PNY",
 }
 
 
@@ -171,6 +309,45 @@ CITY_NAMES = {
     "GAU": "Guwahati",
     "IXC": "Chandigarh",
     "SXR": "Srinagar",
+    "BBI": "Bhubaneswar",
+    "IDR": "Indore",
+    "NAG": "Nagpur",
+    "VNS": "Varanasi",
+    "ATQ": "Amritsar",
+    "RPR": "Raipur",
+    "IXR": "Ranchi",
+    "CJB": "Coimbatore",
+    "IXM": "Madurai",
+    "VTZ": "Visakhapatnam",
+    "TRV": "Trivandrum",
+    "IXE": "Mangalore",
+    "ISK": "Nashik",
+    "STV": "Surat",
+    "BDQ": "Vadodara",
+    "BHO": "Bhopal",
+    "DED": "Dehradun",
+    "IXZ": "Port Blair",
+    "IXA": "Agartala",
+    "IMF": "Imphal",
+    "DIB": "Dibrugarh",
+    "JDH": "Jodhpur",
+    "UDR": "Udaipur",
+    "IXB": "Bagdogra",
+    "IXS": "Silchar",
+    "IXJ": "Jammu",
+    "IXL": "Leh",
+    "RAJ": "Rajkot",
+    "IXU": "Aurangabad",
+    "TIR": "Tirupati",
+    "VGA": "Vijayawada",
+    "BHU": "Bhavnagar",
+    "JLR": "Jabalpur",
+    "GAY": "Gaya",
+    "RDP": "Durgapur",
+    "IXG": "Belgaum",
+    "HBX": "Hubli",
+    "MYQ": "Mysuru",
+    "PNY": "Puducherry",
 }
 
 
@@ -314,6 +491,25 @@ def get_route_history_file(origin, destination):
     )
 
 
+def route_data_age_hours(origin, destination):
+    """
+    Route ki cleaned fare file kitni purani hai (hours mein).
+    File missing ho toh None return karta hai.
+    """
+
+    route_file = get_route_file(
+        origin,
+        destination
+    )
+
+    if not route_file.exists():
+        return None
+
+    age_seconds = time.time() - route_file.stat().st_mtime
+
+    return age_seconds / 3600
+
+
 def load_fares(origin, destination):
     route_file = get_route_file(
         origin,
@@ -411,10 +607,17 @@ def normalize_city(value):
 
 
 def city_name(code):
-    return CITY_NAMES.get(
-        code,
-        code
-    )
+    if code in CITY_NAMES:
+        return CITY_NAMES[code]
+
+    # Unknown city (not in our curated list) - agar 3-letter IATA
+    # code jaisa dikhta hai toh as-is rakho, warna typed city name
+    # ho sakta hai, toh nicely title-case kar do ("KANPUR" -> "Kanpur")
+    # raw uppercase dikhane ke bajaye.
+    if len(code) == 3 and code.isalpha():
+        return code
+
+    return code.title()
 
 
 def route_distance(origin, destination):
@@ -491,6 +694,23 @@ def home():
 
 
 # --------------------------------------------------
+# CITIES API (for search autocomplete)
+# --------------------------------------------------
+
+@app.get("/api/cities")
+def cities():
+    city_list = sorted(
+        (
+            {"code": code, "name": name}
+            for code, name in CITY_NAMES.items()
+        ),
+        key=lambda item: item["name"]
+    )
+
+    return jsonify({"cities": city_list})
+
+
+# --------------------------------------------------
 # REFRESH API
 # --------------------------------------------------
 
@@ -523,6 +743,32 @@ def refresh_pipeline():
         return jsonify({
             "error": "From and to cities cannot be same."
         }), 400
+
+    force_refresh = bool(
+        body.get("force")
+        or request.args.get("force")
+    )
+
+    if not force_refresh:
+        data_age_hours = route_data_age_hours(
+            origin,
+            destination
+        )
+
+        if (
+            data_age_hours is not None
+            and data_age_hours < CACHE_TTL_HOURS
+        ):
+            return jsonify({
+                "status": "cached",
+                "message": (
+                    "Recently collected data is already "
+                    "available for this route."
+                ),
+                "from": origin,
+                "to": destination,
+                "ageHours": round(data_age_hours, 2)
+            }), 200
 
     with pipeline_lock:
         if pipeline_running:
@@ -563,39 +809,105 @@ def refresh_pipeline():
 
 @app.get("/api/refresh-status")
 def refresh_status():
-    return jsonify({
+    response = {
         "running": pipeline_running,
         "from": current_pipeline_route["from"],
         "to": current_pipeline_route["to"]
-    })
+    }
+
+    if pipeline_running:
+        status = load_json_file(PIPELINE_STATUS_FILE, {})
+
+        # Sirf tabhi include karo jab ye status genuinely isi route ke
+        # liye ho - purane run ka stale stage kabhi na dikhe.
+        if (
+            status.get("origin") == current_pipeline_route["from"]
+            and status.get("destination") == current_pipeline_route["to"]
+        ):
+            response["stage"] = status.get("stage")
+            response["windowsCompleted"] = status.get("windowsCompleted")
+            response["totalWindows"] = status.get("totalWindows")
+
+    return jsonify(response)
 
 
 # --------------------------------------------------
-# AIRFARE API
+# TREND / "BOOK NOW VS WAIT" SIGNAL
 # --------------------------------------------------
 
-@app.get("/api/airfare")
-def airfare():
-    origin = normalize_city(
-        request.args.get("from")
-    )
+TREND_CHANGE_THRESHOLD_PERCENT = 2.0
 
-    destination = normalize_city(
-        request.args.get("to")
-    )
 
-    if not origin or not destination:
-        return jsonify({
-            "error": "Both from and to cities are required."
-        }), 400
+def compute_trend(history):
+    """
+    Route ke saved daily history se trend nikalta hai - fares
+    rising hain, falling hain, ya stable hain - aur uske hisaab
+    se "book now vs wait" recommendation deta hai.
 
-    if origin == destination:
-        return jsonify({
-            "error": (
-                "Departure and arrival cities "
-                "cannot be the same."
+    Kam se kam 2 din ka real history chahiye, warna abhi ke liye
+    "insufficient_data" return hota hai (naya route ya abhi tak
+    sirf ek din ka data collect hua ho).
+    """
+
+    if len(history) < 2:
+        return {
+            "direction": "insufficient_data",
+            "changePercent": None,
+            "recommendation": (
+                "Not enough historical data yet to detect a "
+                "price trend for this route - check back after "
+                "a few more days of data collection."
             )
-        }), 400
+        }
+
+    previous_average = history[-2]["avg"]
+    latest_average = history[-1]["avg"]
+
+    change_percent = percentage_difference(
+        latest_average,
+        previous_average
+    )
+
+    if change_percent > TREND_CHANGE_THRESHOLD_PERCENT:
+        direction = "rising"
+        recommendation = (
+            f"Fares have risen {change_percent}% since the last "
+            "check. Prices are trending up - booking now is "
+            "likely cheaper than waiting."
+        )
+    elif change_percent < -TREND_CHANGE_THRESHOLD_PERCENT:
+        direction = "falling"
+        recommendation = (
+            f"Fares have dropped {abs(change_percent)}% since "
+            "the last check. Prices are trending down - it may "
+            "be worth waiting a little longer before booking."
+        )
+    else:
+        direction = "stable"
+        recommendation = (
+            "Fares have been broadly stable recently - book "
+            "whenever suits you."
+        )
+
+    return {
+        "direction": direction,
+        "changePercent": change_percent,
+        "recommendation": recommendation
+    }
+
+
+# --------------------------------------------------
+# AIRFARE COMPUTATION (shared by /api/airfare and
+# /api/market-overview so both use the exact same logic)
+# --------------------------------------------------
+
+def build_airfare_data(origin, destination):
+    """
+    Route ke liye poora computed airfare payload banata hai.
+
+    Return: (data_dict, None) success par, ya
+            (None, (error_dict, status_code)) failure par.
+    """
 
     all_fares = load_fares(
         origin,
@@ -603,7 +915,7 @@ def airfare():
     )
 
     if not all_fares:
-        return jsonify({
+        return None, ({
             "error": (
                 f"No fare data found for "
                 f"{city_name(origin)} to "
@@ -611,7 +923,7 @@ def airfare():
             ),
             "from": city_name(origin),
             "to": city_name(destination)
-        }), 404
+        }, 404)
 
     route_fares = [
         item
@@ -664,13 +976,71 @@ def airfare():
         })
 
     if not valid_records:
-        return jsonify({
+        return None, ({
             "error": "Fare values are unavailable for this route."
-        }), 404
+        }, 404)
+
+    # --------------------------------------------------
+    # BEST BOOKING WINDOW
+    # --------------------------------------------------
+    # Records multiple booking windows (7/15/30/45 din pehle)
+    # collect karte hain. Sabse sasta average jis window par
+    # milta hai, wahi "best time to book" hai - hardcoded
+    # string ki jagah asli data se nikala gaya.
+
+    window_groups = defaultdict(list)
+
+    for item in valid_records:
+        window = item.get("booking_window")
+
+        if isinstance(window, (int, float)):
+            window_groups[int(window)].append(item["fare"])
+
+    booking_window_breakdown = []
+    best_window = None
+    best_window_average = None
+
+    for window in sorted(window_groups.keys()):
+        fares_for_window = window_groups[window]
+        window_average = round(
+            statistics.mean(fares_for_window),
+            2
+        )
+
+        booking_window_breakdown.append({
+            "bookingWindow": window,
+            "averageFare": window_average,
+            "observations": len(fares_for_window)
+        })
+
+        if (
+            best_window_average is None
+            or window_average < best_window_average
+        ):
+            best_window_average = window_average
+            best_window = window
+
+    if best_window is not None:
+        best_booking_window = f"Around {best_window} days before departure"
+    else:
+        best_booking_window = "Not enough data yet"
+
+    REFERENCE_BOOKING_WINDOW = 15
+
+    reference_records = [
+        item
+        for item in valid_records
+        if item.get("booking_window") == REFERENCE_BOOKING_WINDOW
+    ]
+
+    # Reference window ka data abhi tak collect nahi hua toh
+    # saare windows ke combined data se hi dashboard dikhao.
+    if not reference_records:
+        reference_records = valid_records
 
     fare_values = [
         item["fare"]
-        for item in valid_records
+        for item in reference_records
     ]
 
     current_average = round(
@@ -704,7 +1074,7 @@ def airfare():
 
     airline_groups = defaultdict(list)
 
-    for item in valid_records:
+    for item in reference_records:
         airline = (
             item.get("airline")
             or "Unknown airline"
@@ -828,10 +1198,12 @@ def airfare():
             "avg": current_average,
             "low": current_lowest,
             "high": current_highest,
-            "observations": len(valid_records)
+            "observations": len(reference_records)
         }]
 
-    return jsonify({
+    trend = compute_trend(history)
+
+    return {
         "index": index_value,
 
         "averageFare": current_average,
@@ -857,9 +1229,10 @@ def airfare():
             destination
         ),
 
-        "bestBookingWindow": "15–30 days",
+        "bestBookingWindow": best_booking_window,
+        "bookingWindowBreakdown": booking_window_breakdown,
         "priceChange": "Live data",
-        "observations": len(valid_records),
+        "observations": len(reference_records),
         "source": "Google Flights",
         "isReverseRoute": is_reverse_route,
 
@@ -869,8 +1242,199 @@ def airfare():
         ),
 
         "airlines": airline_data,
-        "history": history
+        "history": history,
+        "trend": trend
+    }, None
+
+
+@app.get("/api/airfare")
+def airfare():
+    origin = normalize_city(
+        request.args.get("from")
+    )
+
+    destination = normalize_city(
+        request.args.get("to")
+    )
+
+    if not origin or not destination:
+        return jsonify({
+            "error": "Both from and to cities are required."
+        }), 400
+
+    if origin == destination:
+        return jsonify({
+            "error": (
+                "Departure and arrival cities "
+                "cannot be the same."
+            )
+        }), 400
+
+    data, error = build_airfare_data(origin, destination)
+
+    if error:
+        error_body, status_code = error
+        return jsonify(error_body), status_code
+
+    return jsonify(data)
+
+
+# --------------------------------------------------
+# MARKET OVERVIEW API
+# --------------------------------------------------
+
+def route_last_updated(origin, destination):
+    route_file = get_route_file(origin, destination)
+
+    if not route_file.exists():
+        return None
+
+    return datetime.fromtimestamp(
+        route_file.stat().st_mtime,
+        tz=timezone.utc
+    ).isoformat()
+
+
+@app.get("/api/market-overview")
+def market_overview():
+    routes_dir = BASE_DIR / "data" / "routes"
+
+    entries = []
+
+    if routes_dir.exists():
+        for folder in sorted(routes_dir.iterdir()):
+            if not folder.is_dir() or "_" not in folder.name:
+                continue
+
+            origin, _, destination = folder.name.partition("_")
+            origin = origin.upper()
+            destination = destination.upper()
+
+            data, error = build_airfare_data(origin, destination)
+
+            if error:
+                continue
+
+            entries.append({
+                "fromCode": origin,
+                "toCode": destination,
+                "from": data["from"],
+                "to": data["to"],
+                "route": data["route"],
+                "index": data["index"],
+                "averageFare": data["averageFare"],
+                "lowestFare": data["lowestFare"],
+                "bestBookingWindow": data["bestBookingWindow"],
+                "trend": data["trend"],
+                "observations": data["observations"],
+                "lastUpdated": route_last_updated(origin, destination)
+            })
+
+    entries.sort(key=lambda entry: entry["index"], reverse=True)
+
+    market_average_index = (
+        round(
+            sum(entry["index"] for entry in entries) / len(entries),
+            2
+        )
+        if entries
+        else None
+    )
+
+    return jsonify({
+        "routes": entries,
+        "routeCount": len(entries),
+        "marketAverageIndex": market_average_index
     })
+
+
+# --------------------------------------------------
+# PRICE ALERTS API
+# --------------------------------------------------
+
+ALERTS_FILE = BASE_DIR / "data" / "alerts.json"
+
+EMAIL_PATTERN = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+
+
+def load_alerts():
+    data = load_json_file(ALERTS_FILE, [])
+    return data if isinstance(data, list) else []
+
+
+def save_alerts(alerts):
+    ALERTS_FILE.parent.mkdir(parents=True, exist_ok=True)
+
+    with ALERTS_FILE.open("w", encoding="utf-8") as file:
+        json.dump(alerts, file, indent=2, ensure_ascii=False)
+
+
+@app.post("/api/alerts")
+def create_alert():
+    body = request.get_json(silent=True) or {}
+
+    email = str(body.get("email") or "").strip()
+    origin = normalize_city(body.get("from"))
+    destination = normalize_city(body.get("to"))
+    target_price = safe_float(body.get("targetPrice"))
+
+    if not EMAIL_PATTERN.match(email):
+        return jsonify({
+            "error": "Please enter a valid email address."
+        }), 400
+
+    if not origin or not destination or origin == destination:
+        return jsonify({
+            "error": "Both from and to cities are required."
+        }), 400
+
+    if target_price <= 0:
+        return jsonify({
+            "error": "Please enter a target price greater than 0."
+        }), 400
+
+    alerts = load_alerts()
+
+    alert = {
+        "id": uuid.uuid4().hex,
+        "email": email,
+        "origin": origin,
+        "destination": destination,
+        "targetPrice": target_price,
+        "createdAt": datetime.now(timezone.utc).isoformat(),
+        "notified": False,
+        "notifiedAt": None
+    }
+
+    alerts.append(alert)
+    save_alerts(alerts)
+
+    return jsonify({
+        "status": "created",
+        "message": (
+            f"You'll be emailed at {email} when the {city_name(origin)} to "
+            f"{city_name(destination)} fare drops to ₹{round(target_price):,} "
+            "or below (checked once a day)."
+        )
+    }), 201
+
+
+@app.get("/api/alerts")
+def list_alerts():
+    email = str(request.args.get("email") or "").strip()
+
+    if not EMAIL_PATTERN.match(email):
+        return jsonify({
+            "error": "A valid email address is required."
+        }), 400
+
+    alerts = [
+        alert
+        for alert in load_alerts()
+        if alert.get("email", "").lower() == email.lower()
+    ]
+
+    return jsonify({"alerts": alerts})
 
 
 # --------------------------------------------------

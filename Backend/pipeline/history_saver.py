@@ -1,6 +1,10 @@
 import json
+import sys
 from pathlib import Path
 from datetime import datetime, timezone
+
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
 
 BASE_DIR = Path(__file__).resolve().parents[1]
@@ -10,13 +14,6 @@ CLEANED_FILE = (
     / "data"
     / "cleaned"
     / "flights_cleaned.json"
-)
-
-ROUTE_FILE = (
-    BASE_DIR
-    / "data"
-    / "raw"
-    / "current_route.txt"
 )
 
 # Existing app compatibility ke liye
@@ -46,38 +43,29 @@ def load_json(path, default):
         return default
 
 
-def get_current_route():
+def get_args():
     """
-    current_route.txt ka format:
-    DEL,GOI
+    Example:
+    python history_saver.py DEL GOI
     """
 
-    if not ROUTE_FILE.exists():
-        print(
-            "⚠️ Route file nahi mili. "
-            "Default route DEL_BOM use hoga."
-        )
-        return "DEL", "BOM"
+    if len(sys.argv) >= 3:
+        origin = sys.argv[1].upper()
+        destination = sys.argv[2].upper()
+    else:
+        origin = "DEL"
+        destination = "BOM"
 
-    route_text = ROUTE_FILE.read_text(
-        encoding="utf-8"
-    ).strip()
+    return origin, destination
 
-    if "," not in route_text:
-        print(
-            "⚠️ Route format galat hai. "
-            "Default route DEL_BOM use hoga."
-        )
-        return "DEL", "BOM"
 
-    origin, destination = route_text.split(
-        ",",
-        1
-    )
-
+def get_route_cleaned_file(origin, destination):
     return (
-        origin.strip().upper(),
-        destination.strip().upper()
+        BASE_DIR
+        / "data"
+        / "routes"
+        / f"{origin}_{destination}"
+        / "flights_cleaned.json"
     )
 
 
@@ -143,7 +131,7 @@ def calculate_fare_summary(flights):
 
 
 def save_history():
-    origin, destination = get_current_route()
+    origin, destination = get_args()
 
     print("\n" + "=" * 60)
     print("ROUTE-WISE HISTORY SAVER")
@@ -151,8 +139,13 @@ def save_history():
     print(f"Route: {origin} → {destination}")
     print("=" * 60)
 
+    route_cleaned_file = get_route_cleaned_file(
+        origin,
+        destination
+    )
+
     flights = load_json(
-        CLEANED_FILE,
+        route_cleaned_file,
         []
     )
 

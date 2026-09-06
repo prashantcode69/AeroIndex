@@ -1,0 +1,112 @@
+[
+  {
+    "source": "Google Flights",
+    "airline": "IndiGo",
+    "origin": "CJB",
+    "destination": "MAA",
+    "departure_date": "2026-09-20",
+    "booking_window": 15,
+    "fare": 10715.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:50:04.506118+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "IndiGo",
+    "origin": "CJB",
+    "destination": "MAA",
+    "departure_date": "2026-09-20",
+    "booking_window": 15,
+    "fare": 11001.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:50:04.506118+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "IndiGo",
+    "origin": "CJB",
+    "destination": "MAA",
+    "departure_date": "2026-09-20",
+    "booking_window": 15,
+    "fare": 21831.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:50:04.506118+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "IndiGo",
+    "origin": "CJB",
+    "destination": "MAA",
+    "departure_date": "2026-10-05",
+    "booking_window": 30,
+    "fare": 9887.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:50:04.495041+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "IndiGo",
+    "origin": "CJB",
+    "destination": "MAA",
+    "departure_date": "2026-10-05",
+    "booking_window": 30,
+    "fare": 10189.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:50:04.495041+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "IndiGo",
+    "origin": "CJB",
+    "destination": "MAA",
+    "departure_date": "2026-10-20",
+    "booking_window": 45,
+    "fare": 9505.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:50:04.507182+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "IndiGo",
+    "origin": "CJB",
+    "destination": "MAA",
+    "departure_date": "2026-10-20",
+    "booking_window": 45,
+    "fare": 9812.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:50:04.507182+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "IndiGo",
+    "origin": "CJB",
+    "destination": "MAA",
+    "departure_date": "2026-09-12",
+    "booking_window": 7,
+    "fare": 11163.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:50:04.494418+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "IndiGo",
+    "origin": "CJB",
+    "destination": "MAA",
+    "departure_date": "2026-09-12",
+    "booking_window": 7,
+    "fare": 11439.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:50:04.494418+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "IndiGo",
+    "origin": "CJB",
+    "destination": "MAA",
+    "departure_date": "2026-09-12",
+    "booking_window": 7,
+    "fare": 11899.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:50:04.494418+00:00"
+  }
+]

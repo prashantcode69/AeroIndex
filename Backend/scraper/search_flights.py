@@ -3,20 +3,22 @@ from pathlib import Path
 import sys
 from playwright.sync_api import sync_playwright
 
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
-# Default route agar koi route provide na kiya jaye
+
+# Default route/window agar koi provide na kiya jaye
 DEFAULT_ORIGIN = "DEL"
 DEFAULT_DESTINATION = "BOM"
-
-DAYS_AHEAD = 15
+DEFAULT_BOOKING_WINDOW = 15
 
 
 def get_route():
     """
-    Command line se airport codes leta hai.
+    Command line se airport codes aur booking window leta hai.
 
     Example:
-    python search_flights.py DEL BLR
+    python search_flights.py DEL BLR 15
     """
 
     if len(sys.argv) >= 3:
@@ -26,13 +28,18 @@ def get_route():
         origin = DEFAULT_ORIGIN
         destination = DEFAULT_DESTINATION
 
-    return origin, destination
+    if len(sys.argv) >= 4:
+        booking_window = int(sys.argv[3])
+    else:
+        booking_window = DEFAULT_BOOKING_WINDOW
+
+    return origin, destination, booking_window
 
 
 def main():
-    origin, destination = get_route()
+    origin, destination, booking_window = get_route()
 
-    departure_date = date.today() + timedelta(days=DAYS_AHEAD)
+    departure_date = date.today() + timedelta(days=booking_window)
 
     search_url = (
         "https://www.google.com/travel/flights"
@@ -45,6 +52,7 @@ def main():
     print("=" * 60)
     print(f"Origin: {origin}")
     print(f"Destination: {destination}")
+    print(f"Booking window: {booking_window} days ahead")
     print(f"Departure date: {departure_date}")
     print(f"Search URL: {search_url}")
     print("=" * 60)
@@ -76,8 +84,11 @@ def main():
 
             text = page.locator("body").inner_text()
 
+            # Window-specific file - alag alag booking windows ab
+            # parallel mein scrape hote hain, isliye ek shared scratch
+            # file use nahi kar sakte (overwrite race ho jaayega).
             output_path = Path(
-                "data/raw/google_flights_results.txt"
+                f"data/raw/google_flights_results_{booking_window}.txt"
             )
 
             output_path.parent.mkdir(
@@ -90,22 +101,13 @@ def main():
                 encoding="utf-8",
             )
 
-            # Route information save karna
-            route_path = Path(
-                "data/raw/current_route.txt"
-            )
-
-            route_path.write_text(
-                f"{origin},{destination}",
-                encoding="utf-8",
-            )
-
             print("\nResults text saved.")
-            print(f"Route saved: {origin} → {destination}")
+            print(
+                f"Route saved: {origin} -> {destination} "
+                f"(window: {booking_window}d)"
+            )
             print("\nFirst 3000 characters:\n")
             print(text[:3000])
-
-            page.wait_for_timeout(3000)
 
         except Exception as error:
             print(

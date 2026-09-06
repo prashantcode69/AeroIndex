@@ -1,16 +1,19 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   ArrowRight,
   ArrowUpRight,
   BarChart3,
+  BellRing,
   CalendarDays,
   CircleDollarSign,
   Clock3,
+  Minus,
   Plane,
   Search,
   Sparkles,
   TrendingDown,
+  TrendingUp,
 } from "lucide-react";
 
 import {
@@ -51,9 +54,35 @@ const fallbackChartData = {
   ],
 };
 
-async function getAirfareData(from, to) {
+const API_BASE = "http://127.0.0.1:5000";
+
+// Actively tracked routes with real collected data - shown as quick-select
+// chips so a demo doesn't depend on typing city names correctly live.
+const POPULAR_ROUTES = [
+  { from: "Delhi", to: "Mumbai" },
+  { from: "Delhi", to: "Goa" },
+  { from: "Delhi", to: "Hyderabad" },
+  { from: "Mumbai", to: "Bengaluru" },
+  { from: "Delhi", to: "Chennai" },
+  { from: "Delhi", to: "Kolkata" },
+];
+
+function matchesCityQuery(city, query) {
+  const cleanQuery = query.trim().toLowerCase();
+
+  if (!cleanQuery) {
+    return false;
+  }
+
+  return (
+    city.name.toLowerCase().includes(cleanQuery) ||
+    city.code.toLowerCase().includes(cleanQuery)
+  );
+}
+
+async function getAirfareData(from, to, onProgress) {
   const refreshResponse = await fetch(
-    "http://127.0.0.1:5000/api/refresh",
+    `${API_BASE}/api/refresh`,
     {
       method: "POST",
       headers: {
@@ -70,26 +99,37 @@ async function getAirfareData(from, to) {
     throw new Error("Pipeline start nahi ho paaya.");
   }
 
-  // Pipeline ko start hone ka time do
-  await new Promise((resolve) => setTimeout(resolve, 2000));
+  const refreshData = await refreshResponse.json();
 
-  // Pipeline complete hone tak status check karo
-  for (let attempt = 0; attempt < 120; attempt++) {
-    const statusResponse = await fetch(
-      "http://127.0.0.1:5000/api/refresh-status"
-    );
+  // Route recently collect ho chuka hai toh scraping dobara
+  // start nahi hoti - seedha cached data return hota hai.
+  if (refreshData.status === "cached") {
+    onProgress?.({ running: false, stage: "cached" });
+  } else {
+    // Pipeline complete hone tak status check karo - har poll par
+    // asli progress (kitne booking windows scrape ho chuke hain)
+    // report karte hain, fake spinner nahi.
+    for (let attempt = 0; attempt < 240; attempt++) {
+      const statusResponse = await fetch(
+        `${API_BASE}/api/refresh-status`
+      );
 
-    const statusData = await statusResponse.json();
+      const statusData = await statusResponse.json();
 
-    if (!statusData.running) {
-      break;
+      onProgress?.(statusData);
+
+      if (!statusData.running) {
+        break;
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, 500));
     }
-
-    await new Promise((resolve) => setTimeout(resolve, 1000));
   }
 
+  onProgress?.({ running: false, stage: "finalizing" });
+
   const response = await fetch(
-    `http://127.0.0.1:5000/api/airfare?from=${encodeURIComponent(
+    `${API_BASE}/api/airfare?from=${encodeURIComponent(
       from
     )}&to=${encodeURIComponent(to)}`
   );
@@ -101,6 +141,44 @@ async function getAirfareData(from, to) {
   }
 
   return data;
+}
+
+function getProgressInfo(progress) {
+  if (!progress) {
+    return { percent: 8, message: "Starting live fare search..." };
+  }
+
+  if (progress.stage === "cached") {
+    return { percent: 100, message: "Loading recently collected data..." };
+  }
+
+  if (progress.stage === "scraping") {
+    const total = progress.totalWindows || 4;
+    const done = progress.windowsCompleted || 0;
+
+    return {
+      percent: 10 + Math.round((done / total) * 55),
+      message: `Searching live fares across ${total} booking windows (${done}/${total} done)...`,
+    };
+  }
+
+  if (progress.stage === "analyzing") {
+    return { percent: 75, message: "Comparing fares across airlines..." };
+  }
+
+  if (progress.stage === "computing") {
+    return { percent: 88, message: "Calculating your Airfare Index..." };
+  }
+
+  if (progress.stage === "finalizing" || progress.stage === "done") {
+    return { percent: 97, message: "Finalizing results..." };
+  }
+
+  if (progress.stage === "failed") {
+    return { percent: 100, message: "Scrape hit an error - retrying fetch..." };
+  }
+
+  return { percent: 12, message: "Starting live fare search..." };
 }
 
 function formatCurrency(value) {
@@ -270,18 +348,77 @@ function createLiveChartData(history, averageFare, period) {
 }
 
 function App() {
-  const [showDashboard, setShowDashboard] = useState(false);
+  const [view, setView] = useState("hero");
   const [period, setPeriod] = useState("Monthly");
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [error, setError] = useState("");
   const [routeData, setRouteData] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [progress, setProgress] = useState(null);
+
+  const [marketData, setMarketData] = useState(null);
+  const [marketLoading, setMarketLoading] = useState(false);
+  const [marketError, setMarketError] = useState("");
+
+  const [alertEmail, setAlertEmail] = useState("");
+  const [alertTargetPrice, setAlertTargetPrice] = useState("");
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertError, setAlertError] = useState("");
+  const [alertSubmitting, setAlertSubmitting] = useState(false);
+
+  const [cities, setCities] = useState([]);
+  const [fromSuggestOpen, setFromSuggestOpen] = useState(false);
+  const [toSuggestOpen, setToSuggestOpen] = useState(false);
+
+  useEffect(() => {
+    fetch(`${API_BASE}/api/cities`)
+      .then((response) => response.json())
+      .then((data) => setCities(data.cities || []))
+      .catch(() => setCities([]));
+  }, []);
 
   const cleanFrom = from.trim();
   const cleanTo = to.trim();
 
-  const handleGetIndex = async () => {
+  const fromSuggestions = cities
+    .filter((city) => matchesCityQuery(city, cleanFrom))
+    .slice(0, 6);
+
+  const toSuggestions = cities
+    .filter((city) => matchesCityQuery(city, cleanTo))
+    .slice(0, 6);
+
+  const loadRoute = async (fromValue, toValue) => {
+    setError("");
+    setLoading(true);
+    setProgress(null);
+
+    try {
+      const data = await getAirfareData(
+        fromValue.trim(),
+        toValue.trim(),
+        setProgress
+      );
+
+      setFrom(fromValue);
+      setTo(toValue);
+      setRouteData(data);
+      setAlertMessage("");
+      setAlertError("");
+      setView("dashboard");
+    } catch (err) {
+      setError(
+        err.message ||
+          "Backend se data nahi aa raha. Check karo Flask server running hai ya nahi."
+      );
+    } finally {
+      setLoading(false);
+      setProgress(null);
+    }
+  };
+
+  const handleGetIndex = () => {
     if (!cleanFrom || !cleanTo) {
       setError("Please enter both departure and arrival cities.");
       return;
@@ -292,28 +429,79 @@ function App() {
       return;
     }
 
-    setError("");
-    setLoading(true);
-
-    try {
-      const data = await getAirfareData(cleanFrom, cleanTo);
-
-      setRouteData(data);
-      setShowDashboard(true);
-    } catch (err) {
-      setError(
-        err.message ||
-          "Backend se data nahi aa raha. Check karo Flask server running hai ya nahi."
-      );
-    } finally {
-      setLoading(false);
-    }
+    loadRoute(cleanFrom, cleanTo);
   };
 
   const handleEditRoute = () => {
-    setShowDashboard(false);
+    setView("hero");
     setError("");
   };
+
+  const handleShowMarket = async () => {
+    setView("market");
+    setMarketError("");
+    setMarketLoading(true);
+
+    try {
+      const response = await fetch(`${API_BASE}/api/market-overview`);
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Unable to load market overview");
+      }
+
+      setMarketData(data);
+    } catch (err) {
+      setMarketError(
+        err.message ||
+          "Backend se market overview nahi mila. Check karo Flask server running hai ya nahi."
+      );
+    } finally {
+      setMarketLoading(false);
+    }
+  };
+
+  const handleAlertSubmit = async (e) => {
+    e.preventDefault();
+
+    setAlertMessage("");
+    setAlertError("");
+
+    if (!alertEmail.trim() || !alertTargetPrice) {
+      setAlertError("Please enter both an email and a target price.");
+      return;
+    }
+
+    setAlertSubmitting(true);
+
+    try {
+      const response = await fetch(`${API_BASE}/api/alerts`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: alertEmail.trim(),
+          from: routeData?.fromCode || cleanFrom,
+          to: routeData?.toCode || cleanTo,
+          targetPrice: Number(alertTargetPrice),
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Unable to create alert");
+      }
+
+      setAlertMessage(data.message || "Alert created.");
+      setAlertTargetPrice("");
+    } catch (err) {
+      setAlertError(err.message || "Alert create nahi ho paaya.");
+    } finally {
+      setAlertSubmitting(false);
+    }
+  };
+
+  const progressInfo = getProgressInfo(progress);
 
   const averageFare = Number(routeData?.averageFare || 0);
   const indexValue = Number(routeData?.index || 0);
@@ -358,12 +546,22 @@ function App() {
         </div>
 
         <div className="nav-links">
-          <a href="#dashboard">Dashboard</a>
-          <a href="#how-it-works">How it works</a>
+          <a
+            href="#market"
+            onClick={(e) => {
+              e.preventDefault();
+              handleShowMarket();
+            }}
+          >
+            Market overview
+          </a>
+          <a className="nav-secondary-link" href="#how-it-works">
+            How it works
+          </a>
 
           <button
             className="nav-login"
-            onClick={() => setShowDashboard(false)}
+            onClick={() => setView("hero")}
           >
             Explore index
             <ArrowUpRight size={16} />
@@ -371,7 +569,7 @@ function App() {
         </div>
       </nav>
 
-      {!showDashboard ? (
+      {view === "hero" ? (
         <section className="hero-section">
           <div className="hero-copy">
             <div className="eyebrow">
@@ -396,7 +594,7 @@ function App() {
                   <Plane size={18} />
                 </div>
 
-                <div>
+                <div className="city-autocomplete">
                   <label>FROM</label>
 
                   <input
@@ -404,9 +602,33 @@ function App() {
                     onChange={(e) => {
                       setFrom(e.target.value);
                       setError("");
+                      setFromSuggestOpen(true);
                     }}
+                    onFocus={() => setFromSuggestOpen(true)}
+                    onBlur={() =>
+                      setTimeout(() => setFromSuggestOpen(false), 120)
+                    }
                     placeholder="e.g. Delhi"
+                    autoComplete="off"
                   />
+
+                  {fromSuggestOpen && fromSuggestions.length > 0 && (
+                    <div className="city-suggestions">
+                      {fromSuggestions.map((city) => (
+                        <div
+                          key={city.code}
+                          className="city-suggestion-item"
+                          onMouseDown={() => {
+                            setFrom(city.name);
+                            setFromSuggestOpen(false);
+                          }}
+                        >
+                          <strong>{city.name}</strong>
+                          <span>{city.code}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -419,7 +641,7 @@ function App() {
                   <Plane size={18} />
                 </div>
 
-                <div>
+                <div className="city-autocomplete">
                   <label>TO</label>
 
                   <input
@@ -427,9 +649,33 @@ function App() {
                     onChange={(e) => {
                       setTo(e.target.value);
                       setError("");
+                      setToSuggestOpen(true);
                     }}
+                    onFocus={() => setToSuggestOpen(true)}
+                    onBlur={() =>
+                      setTimeout(() => setToSuggestOpen(false), 120)
+                    }
                     placeholder="e.g. Mumbai"
+                    autoComplete="off"
                   />
+
+                  {toSuggestOpen && toSuggestions.length > 0 && (
+                    <div className="city-suggestions">
+                      {toSuggestions.map((city) => (
+                        <div
+                          key={city.code}
+                          className="city-suggestion-item"
+                          onMouseDown={() => {
+                            setTo(city.name);
+                            setToSuggestOpen(false);
+                          }}
+                        >
+                          <strong>{city.name}</strong>
+                          <span>{city.code}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -438,12 +684,22 @@ function App() {
                 onClick={handleGetIndex}
                 disabled={loading}
               >
-                {loading ? "Updating..." : "Get Index"}
+                {loading ? "Searching..." : "Get Index"}
                 <ArrowRight size={18} />
               </button>
             </div>
 
-            {error && (
+            {loading && (
+              <div className="search-progress">
+                <div className="search-progress-bar">
+                  <div style={{ width: `${progressInfo.percent}%` }} />
+                </div>
+
+                <span>{progressInfo.message}</span>
+              </div>
+            )}
+
+            {!loading && error && (
               <p
                 style={{
                   marginTop: "12px",
@@ -464,6 +720,23 @@ function App() {
               <div className="trust-item">
                 <BarChart3 size={17} />
                 <span>Track price trends</span>
+              </div>
+            </div>
+
+            <div className="popular-routes">
+              <span>Popular routes</span>
+
+              <div className="popular-routes-list">
+                {POPULAR_ROUTES.map((route) => (
+                  <button
+                    key={`${route.from}-${route.to}`}
+                    className="popular-route-chip"
+                    onClick={() => loadRoute(route.from, route.to)}
+                    disabled={loading}
+                  >
+                    {route.from} → {route.to}
+                  </button>
+                ))}
               </div>
             </div>
           </div>
@@ -553,7 +826,7 @@ function App() {
             </div>
           </div>
         </section>
-      ) : (
+      ) : view === "dashboard" ? (
         <section className="dashboard-section" id="dashboard">
           <div className="dashboard-heading">
             <div>
@@ -776,7 +1049,15 @@ function App() {
               <div className="panel-kicker">SMART INSIGHT</div>
 
               <div className="insight-icon">
-                <Sparkles size={22} />
+                {routeData?.trend?.direction === "rising" ? (
+                  <TrendingUp size={22} />
+                ) : routeData?.trend?.direction === "falling" ? (
+                  <TrendingDown size={22} />
+                ) : routeData?.trend?.direction === "stable" ? (
+                  <Minus size={22} />
+                ) : (
+                  <Sparkles size={22} />
+                )}
               </div>
 
               <h3>Live airfare analysis</h3>
@@ -788,8 +1069,9 @@ function App() {
                     ? formatCurrency(routeData.averageFare)
                     : "--"}
                 </strong>
-                . This index is calculated from the latest collected Google
-                Flights fare records.
+                .{" "}
+                {routeData?.trend?.recommendation ||
+                  "This index is calculated from the latest collected Google Flights fare records."}
               </p>
 
               <div className="insight-route">
@@ -899,6 +1181,202 @@ function App() {
               )}
             </div>
           </div>
+
+          <div className="panel alert-panel">
+            <div className="panel-heading">
+              <div>
+                <span className="panel-kicker">PRICE ALERT</span>
+                <h3>Get notified if this fare drops</h3>
+              </div>
+            </div>
+
+            <form className="alert-form" onSubmit={handleAlertSubmit}>
+              <div className="alert-field">
+                <label>EMAIL</label>
+                <input
+                  type="email"
+                  value={alertEmail}
+                  onChange={(e) => setAlertEmail(e.target.value)}
+                  placeholder="you@example.com"
+                />
+              </div>
+
+              <div className="alert-field">
+                <label>TARGET PRICE (₹)</label>
+                <input
+                  type="number"
+                  min="1"
+                  value={alertTargetPrice}
+                  onChange={(e) => setAlertTargetPrice(e.target.value)}
+                  placeholder={
+                    routeData?.lowestFare
+                      ? String(Math.round(routeData.lowestFare * 0.95))
+                      : "e.g. 6000"
+                  }
+                />
+              </div>
+
+              <button
+                className="alert-submit-btn"
+                type="submit"
+                disabled={alertSubmitting}
+              >
+                <BellRing size={16} />
+                {alertSubmitting ? "Saving..." : "Alert me"}
+              </button>
+            </form>
+
+            {alertMessage && (
+              <p className="alert-feedback success">{alertMessage}</p>
+            )}
+
+            {alertError && (
+              <p className="alert-feedback error">{alertError}</p>
+            )}
+          </div>
+        </section>
+      ) : (
+        <section className="dashboard-section" id="market">
+          <div className="dashboard-heading">
+            <div>
+              <div className="breadcrumb">
+                AeroIndex <span>/</span> Market overview
+              </div>
+
+              <h2>National Airfare Index</h2>
+
+              <p>
+                How every tracked route is currently pricing relative to
+                its own cheapest fare - higher means more inflated right
+                now, lower means closer to its floor.
+              </p>
+            </div>
+
+            <button className="edit-route-btn" onClick={() => setView("hero")}>
+              <Search size={16} />
+              Analyse a route
+            </button>
+          </div>
+
+          {loading && (
+            <div className="search-progress market-progress">
+              <div className="search-progress-bar">
+                <div style={{ width: `${progressInfo.percent}%` }} />
+              </div>
+
+              <span>{progressInfo.message}</span>
+            </div>
+          )}
+
+          {marketLoading && (
+            <p style={{ color: "#8c96a7", fontSize: "13px" }}>
+              Loading market overview...
+            </p>
+          )}
+
+          {marketError && (
+            <p style={{ color: "#c2410c", fontSize: "13px" }}>
+              {marketError}
+            </p>
+          )}
+
+          {!marketLoading && !marketError && marketData && (
+            <>
+              <div className="panel market-summary-panel">
+                <div className="stat-label">
+                  <BarChart3 size={17} />
+                  Market average index
+                </div>
+
+                <div className="stat-value">
+                  {marketData.marketAverageIndex ?? "--"}
+                </div>
+
+                <div className="stat-change neutral">
+                  Across {marketData.routeCount} tracked route
+                  {marketData.routeCount === 1 ? "" : "s"}
+                </div>
+              </div>
+
+              <div className="panel airlines-panel">
+                <div className="panel-heading">
+                  <div>
+                    <span className="panel-kicker">ALL ROUTES</span>
+                    <h3>Sorted from most to least inflated</h3>
+                  </div>
+                </div>
+
+                <div className="airline-list">
+                  {marketData.routes.length > 0 ? (
+                    marketData.routes.map((route, index) => (
+                      <div
+                        className="airline-row market-row"
+                        key={`${route.fromCode}-${route.toCode}-${index}`}
+                        onClick={() => loadRoute(route.from, route.to)}
+                      >
+                        <div className="airline-name">
+                          <div className="airline-logo">
+                            {route.fromCode}
+                          </div>
+
+                          <div>
+                            <strong>
+                              {route.from} → {route.to}
+                            </strong>
+
+                            {route.trend?.direction === "rising" && (
+                              <span
+                                className="best-badge"
+                                style={{ color: "#c2410c" }}
+                              >
+                                TRENDING UP
+                              </span>
+                            )}
+
+                            {route.trend?.direction === "falling" && (
+                              <span className="best-badge">
+                                TRENDING DOWN
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="airline-metric">
+                          <span>Index</span>
+                          <strong>{route.index}</strong>
+                        </div>
+
+                        <div className="airline-metric">
+                          <span>Average fare</span>
+                          <strong>{formatCurrency(route.averageFare)}</strong>
+                        </div>
+
+                        <div className="airline-metric difference">
+                          <span>Best time to book</span>
+                          <strong>{route.bestBookingWindow}</strong>
+                        </div>
+
+                        <button className="airline-arrow">
+                          <ArrowUpRight size={17} />
+                        </button>
+                      </div>
+                    ))
+                  ) : (
+                    <div
+                      style={{
+                        padding: "28px 0",
+                        textAlign: "center",
+                        color: "#8c96a7",
+                      }}
+                    >
+                      No routes tracked yet - analyse a route to add it
+                      here.
+                    </div>
+                  )}
+                </div>
+              </div>
+            </>
+          )}
         </section>
       )}
 
@@ -914,6 +1392,11 @@ function App() {
         </div>
 
         <span>Airfare intelligence, simplified.</span>
+
+        <span style={{ maxWidth: "320px", textAlign: "right" }}>
+          Fare data is sourced from publicly available Google Flights
+          search results for demonstration purposes.
+        </span>
       </footer>
     </main>
   );

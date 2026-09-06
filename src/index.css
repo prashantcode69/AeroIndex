@@ -245,6 +245,8 @@ button {
 }
 
 .get-index-btn {
+  position: relative;
+  z-index: 6;
   border: none;
   border-radius: 11px;
   background: #5eead4;
@@ -914,7 +916,43 @@ button {
     width: calc(100% - 32px);
   }
 
+  .navbar {
+    flex-wrap: wrap;
+    row-gap: 12px;
+  }
+
+  .brand {
+    font-size: 16px;
+    gap: 7px;
+  }
+
+  .brand-mark {
+    width: 28px;
+    height: 28px;
+  }
+
   .nav-links {
+    gap: 10px;
+    flex: 1 0 100%;
+    justify-content: space-between;
+  }
+
+  .nav-links .nav-secondary-link {
+    display: none;
+  }
+
+  .nav-links > a {
+    white-space: nowrap;
+    font-size: 11px;
+  }
+
+  .nav-login {
+    padding: 10px 13px;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  .nav-login svg {
     display: none;
   }
 
@@ -1533,7 +1571,215 @@ button {
     border: 1px solid #e0e4eb;
     color: #7b8494;
   }
-  
+
+  /* MARKET OVERVIEW */
+
+  .market-summary-panel {
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+
+  .market-row {
+    cursor: pointer;
+  }
+
+  .market-row:hover {
+    background: #f5f6f8;
+  }
+
+  /* PRICE ALERT */
+
+  .alert-panel {
+    margin-top: 16px;
+  }
+
+  .alert-form {
+    display: flex;
+    align-items: flex-end;
+    gap: 16px;
+    margin-top: 22px;
+    flex-wrap: wrap;
+  }
+
+  .alert-field {
+    flex: 1;
+    min-width: 180px;
+  }
+
+  .alert-field label {
+    display: block;
+    margin-bottom: 7px;
+    color: #a0a8b6;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+  }
+
+  .alert-field input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #dce1e9;
+    border-radius: 7px;
+    outline: 0;
+    color: #172033;
+    font-size: 13px;
+    background: #f5f6f8;
+  }
+
+  .alert-field input:focus {
+    border-color: #3155a5;
+  }
+
+  .alert-submit-btn {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 12px 18px;
+    border: 0;
+    border-radius: 7px;
+    background: #3155a5;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .alert-submit-btn:hover {
+    background: #264686;
+  }
+
+  .alert-submit-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+
+  .alert-feedback {
+    margin: 16px 0 0;
+    font-size: 13px;
+  }
+
+  .alert-feedback.success {
+    color: #16a34a;
+  }
+
+  .alert-feedback.error {
+    color: #c2410c;
+  }
+
+  /* CITY AUTOCOMPLETE */
+
+  .city-autocomplete {
+    position: relative;
+  }
+
+  .city-suggestions {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: -20px;
+    right: -20px;
+    background: #ffffff;
+    border: 1px solid #e0e4eb;
+    border-radius: 10px;
+    box-shadow: 0 15px 35px rgba(30, 45, 75, 0.09);
+    overflow: hidden;
+    z-index: 5;
+  }
+
+  .city-suggestion-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 11px 16px;
+    cursor: pointer;
+    font-size: 13px;
+    color: #172033;
+  }
+
+  .city-suggestion-item:hover {
+    background: #f5f6f8;
+  }
+
+  .city-suggestion-item span {
+    color: #9aa4b4;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+
+  /* POPULAR ROUTES */
+
+  .popular-routes {
+    margin-top: 20px;
+  }
+
+  .popular-routes > span {
+    display: block;
+    margin-bottom: 10px;
+    color: #9aa4b4;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .popular-routes-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 9px;
+  }
+
+  .popular-route-chip {
+    padding: 9px 14px;
+    border: 1px solid #dce1e9;
+    border-radius: 20px;
+    background: #ffffff;
+    color: #172033;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .popular-route-chip:hover {
+    border-color: #3155a5;
+    color: #3155a5;
+  }
+
+  .popular-route-chip:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  /* SEARCH PROGRESS */
+
+  .search-progress {
+    margin-top: 16px;
+    max-width: 700px;
+  }
+
+  .search-progress.market-progress {
+    max-width: 100%;
+    margin-bottom: 16px;
+  }
+
+  .search-progress-bar {
+    height: 6px;
+    border-radius: 10px;
+    background: #e6eaf0;
+    overflow: hidden;
+  }
+
+  .search-progress-bar div {
+    height: 100%;
+    border-radius: inherit;
+    background: #3155a5;
+    transition: width 0.4s ease;
+  }
+
+  .search-progress > span {
+    display: block;
+    margin-top: 9px;
+    color: #7b8494;
+    font-size: 12px;
+  }
+
   /* RESPONSIVE */
   
   @media (max-width: 950px) {

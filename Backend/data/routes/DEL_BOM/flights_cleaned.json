@@ -8,7 +8,7 @@
     "booking_window": 15,
     "fare": 12510.0,
     "currency": "INR",
-    "collected_at": "2026-09-05T11:39:30.314861+00:00"
+    "collected_at": "2026-09-05T16:34:14.422970+00:00"
   },
   {
     "source": "Google Flights",
@@ -19,7 +19,7 @@
     "booking_window": 15,
     "fare": 13140.0,
     "currency": "INR",
-    "collected_at": "2026-09-05T11:39:30.314861+00:00"
+    "collected_at": "2026-09-05T16:34:14.422970+00:00"
   },
   {
     "source": "Google Flights",
@@ -30,29 +30,7 @@
     "booking_window": 15,
     "fare": 13455.0,
     "currency": "INR",
-    "collected_at": "2026-09-05T11:39:30.314861+00:00"
-  },
-  {
-    "source": "Google Flights",
-    "airline": "Air India Express",
-    "origin": "DEL",
-    "destination": "BOM",
-    "departure_date": "2026-09-20",
-    "booking_window": 15,
-    "fare": 12695.0,
-    "currency": "INR",
-    "collected_at": "2026-09-05T11:39:30.314905+00:00"
-  },
-  {
-    "source": "Google Flights",
-    "airline": "Air India Express",
-    "origin": "DEL",
-    "destination": "BOM",
-    "departure_date": "2026-09-20",
-    "booking_window": 15,
-    "fare": 13236.0,
-    "currency": "INR",
-    "collected_at": "2026-09-05T11:39:30.314905+00:00"
+    "collected_at": "2026-09-05T16:34:14.422970+00:00"
   },
   {
     "source": "Google Flights",
@@ -61,9 +39,9 @@
     "destination": "BOM",
     "departure_date": "2026-09-20",
     "booking_window": 15,
-    "fare": 13196.0,
+    "fare": 12667.0,
     "currency": "INR",
-    "collected_at": "2026-09-05T11:39:30.314929+00:00"
+    "collected_at": "2026-09-05T16:34:14.422983+00:00"
   },
   {
     "source": "Google Flights",
@@ -74,7 +52,18 @@
     "booking_window": 15,
     "fare": 13407.0,
     "currency": "INR",
-    "collected_at": "2026-09-05T11:39:30.314929+00:00"
+    "collected_at": "2026-09-05T16:34:14.422983+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "Air India",
+    "origin": "DEL",
+    "destination": "BOM",
+    "departure_date": "2026-09-20",
+    "booking_window": 15,
+    "fare": 13638.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:34:14.422983+00:00"
   },
   {
     "source": "Google Flights",
@@ -85,18 +74,7 @@
     "booking_window": 15,
     "fare": 13669.0,
     "currency": "INR",
-    "collected_at": "2026-09-05T11:39:30.314929+00:00"
-  },
-  {
-    "source": "Google Flights",
-    "airline": "Air India",
-    "origin": "DEL",
-    "destination": "BOM",
-    "departure_date": "2026-09-20",
-    "booking_window": 15,
-    "fare": 13789.0,
-    "currency": "INR",
-    "collected_at": "2026-09-05T11:39:30.314929+00:00"
+    "collected_at": "2026-09-05T16:34:14.422983+00:00"
   },
   {
     "source": "Google Flights",
@@ -107,7 +85,7 @@
     "booking_window": 15,
     "fare": 13806.0,
     "currency": "INR",
-    "collected_at": "2026-09-05T11:39:30.314929+00:00"
+    "collected_at": "2026-09-05T16:34:14.422983+00:00"
   },
   {
     "source": "Google Flights",
@@ -118,7 +96,7 @@
     "booking_window": 15,
     "fare": 14089.0,
     "currency": "INR",
-    "collected_at": "2026-09-05T11:39:30.314929+00:00"
+    "collected_at": "2026-09-05T16:34:14.422983+00:00"
   },
   {
     "source": "Google Flights",
@@ -129,7 +107,7 @@
     "booking_window": 15,
     "fare": 14173.0,
     "currency": "INR",
-    "collected_at": "2026-09-05T11:39:30.314929+00:00"
+    "collected_at": "2026-09-05T16:34:14.422983+00:00"
   },
   {
     "source": "Google Flights",
@@ -140,7 +118,7 @@
     "booking_window": 15,
     "fare": 16026.0,
     "currency": "INR",
-    "collected_at": "2026-09-05T11:39:30.314929+00:00"
+    "collected_at": "2026-09-05T16:34:14.422983+00:00"
   },
   {
     "source": "Google Flights",
@@ -151,7 +129,7 @@
     "booking_window": 15,
     "fare": 16278.0,
     "currency": "INR",
-    "collected_at": "2026-09-05T11:39:30.314929+00:00"
+    "collected_at": "2026-09-05T16:34:14.422983+00:00"
   },
   {
     "source": "Google Flights",
@@ -162,7 +140,40 @@
     "booking_window": 15,
     "fare": 16688.0,
     "currency": "INR",
-    "collected_at": "2026-09-05T11:39:30.314929+00:00"
+    "collected_at": "2026-09-05T16:34:14.422983+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "Air India Express",
+    "origin": "DEL",
+    "destination": "BOM",
+    "departure_date": "2026-09-20",
+    "booking_window": 15,
+    "fare": 12695.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:34:14.422988+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "Air India Express",
+    "origin": "DEL",
+    "destination": "BOM",
+    "departure_date": "2026-09-20",
+    "booking_window": 15,
+    "fare": 13236.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:34:14.422988+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "Air India Express",
+    "origin": "DEL",
+    "destination": "BOM",
+    "departure_date": "2026-09-20",
+    "booking_window": 15,
+    "fare": 13878.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:34:14.422988+00:00"
   },
   {
     "source": "Google Flights",
@@ -173,7 +184,7 @@
     "booking_window": 15,
     "fare": 13337.0,
     "currency": "INR",
-    "collected_at": "2026-09-05T11:39:30.314949+00:00"
+    "collected_at": "2026-09-05T16:34:14.422991+00:00"
   },
   {
     "source": "Google Flights",
@@ -184,7 +195,7 @@
     "booking_window": 15,
     "fare": 14085.0,
     "currency": "INR",
-    "collected_at": "2026-09-05T11:39:30.314949+00:00"
+    "collected_at": "2026-09-05T16:34:14.422991+00:00"
   },
   {
     "source": "Google Flights",
@@ -195,7 +206,7 @@
     "booking_window": 15,
     "fare": 14218.0,
     "currency": "INR",
-    "collected_at": "2026-09-05T11:39:30.314949+00:00"
+    "collected_at": "2026-09-05T16:34:14.422991+00:00"
   },
   {
     "source": "Google Flights",
@@ -206,7 +217,7 @@
     "booking_window": 15,
     "fare": 14353.0,
     "currency": "INR",
-    "collected_at": "2026-09-05T11:39:30.314949+00:00"
+    "collected_at": "2026-09-05T16:34:14.422991+00:00"
   },
   {
     "source": "Google Flights",
@@ -217,7 +228,7 @@
     "booking_window": 15,
     "fare": 14493.0,
     "currency": "INR",
-    "collected_at": "2026-09-05T11:39:30.314949+00:00"
+    "collected_at": "2026-09-05T16:34:14.422991+00:00"
   },
   {
     "source": "Google Flights",
@@ -228,7 +239,7 @@
     "booking_window": 15,
     "fare": 14176.0,
     "currency": "INR",
-    "collected_at": "2026-09-05T11:39:30.315871+00:00"
+    "collected_at": "2026-09-05T16:34:14.423133+00:00"
   },
   {
     "source": "Google Flights",
@@ -239,6 +250,556 @@
     "booking_window": 15,
     "fare": 29008.0,
     "currency": "INR",
-    "collected_at": "2026-09-05T11:39:30.315871+00:00"
+    "collected_at": "2026-09-05T16:34:14.423133+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "IndiGo",
+    "origin": "DEL",
+    "destination": "BOM",
+    "departure_date": "2026-10-05",
+    "booking_window": 30,
+    "fare": 12442.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:34:14.428823+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "IndiGo",
+    "origin": "DEL",
+    "destination": "BOM",
+    "departure_date": "2026-10-05",
+    "booking_window": 30,
+    "fare": 12882.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:34:14.428823+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "IndiGo",
+    "origin": "DEL",
+    "destination": "BOM",
+    "departure_date": "2026-10-05",
+    "booking_window": 30,
+    "fare": 13040.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:34:14.428823+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "IndiGo",
+    "origin": "DEL",
+    "destination": "BOM",
+    "departure_date": "2026-10-05",
+    "booking_window": 30,
+    "fare": 13250.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:34:14.428823+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "IndiGo",
+    "origin": "DEL",
+    "destination": "BOM",
+    "departure_date": "2026-10-05",
+    "booking_window": 30,
+    "fare": 13512.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:34:14.428823+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "IndiGo",
+    "origin": "DEL",
+    "destination": "BOM",
+    "departure_date": "2026-10-05",
+    "booking_window": 30,
+    "fare": 13827.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:34:14.428823+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "IndiGo",
+    "origin": "DEL",
+    "destination": "BOM",
+    "departure_date": "2026-10-05",
+    "booking_window": 30,
+    "fare": 14142.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:34:14.428823+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "Air India",
+    "origin": "DEL",
+    "destination": "BOM",
+    "departure_date": "2026-10-05",
+    "booking_window": 30,
+    "fare": 13196.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:34:14.428841+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "Air India",
+    "origin": "DEL",
+    "destination": "BOM",
+    "departure_date": "2026-10-05",
+    "booking_window": 30,
+    "fare": 13202.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:34:14.428841+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "Air India",
+    "origin": "DEL",
+    "destination": "BOM",
+    "departure_date": "2026-10-05",
+    "booking_window": 30,
+    "fare": 13307.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:34:14.428841+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "Air India",
+    "origin": "DEL",
+    "destination": "BOM",
+    "departure_date": "2026-10-05",
+    "booking_window": 30,
+    "fare": 13353.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:34:14.428841+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "Air India",
+    "origin": "DEL",
+    "destination": "BOM",
+    "departure_date": "2026-10-05",
+    "booking_window": 30,
+    "fare": 13407.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:34:14.428841+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "Air India",
+    "origin": "DEL",
+    "destination": "BOM",
+    "departure_date": "2026-10-05",
+    "booking_window": 30,
+    "fare": 13470.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:34:14.428841+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "Air India",
+    "origin": "DEL",
+    "destination": "BOM",
+    "departure_date": "2026-10-05",
+    "booking_window": 30,
+    "fare": 13527.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:34:14.428841+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "Air India",
+    "origin": "DEL",
+    "destination": "BOM",
+    "departure_date": "2026-10-05",
+    "booking_window": 30,
+    "fare": 13580.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:34:14.428841+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "Akasa Air",
+    "origin": "DEL",
+    "destination": "BOM",
+    "departure_date": "2026-10-05",
+    "booking_window": 30,
+    "fare": 13337.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:34:14.428847+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "Akasa Air",
+    "origin": "DEL",
+    "destination": "BOM",
+    "departure_date": "2026-10-05",
+    "booking_window": 30,
+    "fare": 13826.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:34:14.428847+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "Air India Express",
+    "origin": "DEL",
+    "destination": "BOM",
+    "departure_date": "2026-10-05",
+    "booking_window": 30,
+    "fare": 13067.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:34:14.428942+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "SpiceJet",
+    "origin": "DEL",
+    "destination": "BOM",
+    "departure_date": "2026-10-05",
+    "booking_window": 30,
+    "fare": 13154.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:34:14.428949+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "IndiGo",
+    "origin": "DEL",
+    "destination": "BOM",
+    "departure_date": "2026-10-20",
+    "booking_window": 45,
+    "fare": 12795.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:34:14.424876+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "IndiGo",
+    "origin": "DEL",
+    "destination": "BOM",
+    "departure_date": "2026-10-20",
+    "booking_window": 45,
+    "fare": 13063.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:34:14.424876+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "IndiGo",
+    "origin": "DEL",
+    "destination": "BOM",
+    "departure_date": "2026-10-20",
+    "booking_window": 45,
+    "fare": 13724.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:34:14.424876+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "IndiGo",
+    "origin": "DEL",
+    "destination": "BOM",
+    "departure_date": "2026-10-20",
+    "booking_window": 45,
+    "fare": 13874.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:34:14.424876+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "IndiGo",
+    "origin": "DEL",
+    "destination": "BOM",
+    "departure_date": "2026-10-20",
+    "booking_window": 45,
+    "fare": 14174.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:34:14.424876+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "Akasa Air",
+    "origin": "DEL",
+    "destination": "BOM",
+    "departure_date": "2026-10-20",
+    "booking_window": 45,
+    "fare": 13809.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:34:14.424895+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "Akasa Air",
+    "origin": "DEL",
+    "destination": "BOM",
+    "departure_date": "2026-10-20",
+    "booking_window": 45,
+    "fare": 14053.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:34:14.424895+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "Akasa Air",
+    "origin": "DEL",
+    "destination": "BOM",
+    "departure_date": "2026-10-20",
+    "booking_window": 45,
+    "fare": 14179.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:34:14.424895+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "Akasa Air",
+    "origin": "DEL",
+    "destination": "BOM",
+    "departure_date": "2026-10-20",
+    "booking_window": 45,
+    "fare": 14307.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:34:14.424895+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "Akasa Air",
+    "origin": "DEL",
+    "destination": "BOM",
+    "departure_date": "2026-10-20",
+    "booking_window": 45,
+    "fare": 14706.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:34:14.424895+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "Air India",
+    "origin": "DEL",
+    "destination": "BOM",
+    "departure_date": "2026-10-20",
+    "booking_window": 45,
+    "fare": 14172.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:34:14.424902+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "Air India",
+    "origin": "DEL",
+    "destination": "BOM",
+    "departure_date": "2026-10-20",
+    "booking_window": 45,
+    "fare": 14174.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:34:14.424902+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "Air India",
+    "origin": "DEL",
+    "destination": "BOM",
+    "departure_date": "2026-10-20",
+    "booking_window": 45,
+    "fare": 14332.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:34:14.424902+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "Air India",
+    "origin": "DEL",
+    "destination": "BOM",
+    "departure_date": "2026-10-20",
+    "booking_window": 45,
+    "fare": 14346.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:34:14.424902+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "Air India",
+    "origin": "DEL",
+    "destination": "BOM",
+    "departure_date": "2026-10-20",
+    "booking_window": 45,
+    "fare": 14521.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:34:14.424902+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "Air India",
+    "origin": "DEL",
+    "destination": "BOM",
+    "departure_date": "2026-10-20",
+    "booking_window": 45,
+    "fare": 14836.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:34:14.424902+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "SpiceJet",
+    "origin": "DEL",
+    "destination": "BOM",
+    "departure_date": "2026-10-20",
+    "booking_window": 45,
+    "fare": 13588.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:34:14.424941+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "Air India Express",
+    "origin": "DEL",
+    "destination": "BOM",
+    "departure_date": "2026-10-20",
+    "booking_window": 45,
+    "fare": 13799.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:34:14.425031+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "IndiGo",
+    "origin": "DEL",
+    "destination": "BOM",
+    "departure_date": "2026-09-12",
+    "booking_window": 7,
+    "fare": 12882.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:34:14.433079+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "IndiGo",
+    "origin": "DEL",
+    "destination": "BOM",
+    "departure_date": "2026-09-12",
+    "booking_window": 7,
+    "fare": 13040.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:34:14.433079+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "IndiGo",
+    "origin": "DEL",
+    "destination": "BOM",
+    "departure_date": "2026-09-12",
+    "booking_window": 7,
+    "fare": 13250.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:34:14.433079+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "Air India",
+    "origin": "DEL",
+    "destination": "BOM",
+    "departure_date": "2026-09-12",
+    "booking_window": 7,
+    "fare": 13039.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:34:14.433100+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "Air India",
+    "origin": "DEL",
+    "destination": "BOM",
+    "departure_date": "2026-09-12",
+    "booking_window": 7,
+    "fare": 13197.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:34:14.433100+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "Air India",
+    "origin": "DEL",
+    "destination": "BOM",
+    "departure_date": "2026-09-12",
+    "booking_window": 7,
+    "fare": 13407.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:34:14.433100+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "Air India",
+    "origin": "DEL",
+    "destination": "BOM",
+    "departure_date": "2026-09-12",
+    "booking_window": 7,
+    "fare": 14299.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:34:14.433100+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "Air India",
+    "origin": "DEL",
+    "destination": "BOM",
+    "departure_date": "2026-09-12",
+    "booking_window": 7,
+    "fare": 16026.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:34:14.433100+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "Air India",
+    "origin": "DEL",
+    "destination": "BOM",
+    "departure_date": "2026-09-12",
+    "booking_window": 7,
+    "fare": 16278.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:34:14.433100+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "Akasa Air",
+    "origin": "DEL",
+    "destination": "BOM",
+    "departure_date": "2026-09-12",
+    "booking_window": 7,
+    "fare": 13337.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:34:14.433107+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "Air India Express",
+    "origin": "DEL",
+    "destination": "BOM",
+    "departure_date": "2026-09-12",
+    "booking_window": 7,
+    "fare": 13067.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:34:14.433269+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "Air India Express",
+    "origin": "DEL",
+    "destination": "BOM",
+    "departure_date": "2026-09-12",
+    "booking_window": 7,
+    "fare": 14327.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:34:14.433269+00:00"
+  },
+  {
+    "source": "Google Flights",
+    "airline": "SpiceJet",
+    "origin": "DEL",
+    "destination": "BOM",
+    "departure_date": "2026-09-12",
+    "booking_window": 7,
+    "fare": 13792.0,
+    "currency": "INR",
+    "collected_at": "2026-09-05T16:34:14.433360+00:00"
   }
 ]
